@@ -68,10 +68,10 @@ jobs:
           # Windows 构建步骤
         elif [ "${{ matrix.build }}" = "mac" ]; then
           # Mac M1 构建步骤
-          cp -r "./target/${{ matrix.target }}/release" ./archive/
-          cp -r "./js/license-gen/target/${{ matrix.target }}/release/" ./archive/
+          cp "./target/${{ matrix.target }}/release/node_inject" ./archive/
+          cp "./js/license-gen/target/${{ matrix.target }}/release/license-gen" ./archive/
           cd archive
-          tar -czf "${{ matrix.archive-name }}" ./*
+          tar -czf "${{ matrix.archive-name }}" LICENSE README.md node_inject license-gen
         else
           # Linux 构建步骤
           cp "./target/${{ matrix.target }}/release/node_inject" ./archive/
