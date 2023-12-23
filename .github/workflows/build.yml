@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [linux, windows]
+        build: [linux, windows, mac]
         include:
         - build: linux
           os: ubuntu-latest
@@ -19,6 +19,11 @@ jobs:
           rust: nightly-x86_64-msvc
           target: x86_64-pc-windows-msvc
           archive-name: NodeInject-windows.7z
+        - build: mac
+          os: macos-latest
+          rust: nightly
+          target: aarch64-apple-darwin
+          archive-name: NodeInject-mac.tar.gz
       fail-fast: false
 
     steps:
@@ -56,15 +61,14 @@ jobs:
         cp LICENSE README.md archive/
         ls -lR
         if [ "${{ matrix.build }}" = "windows" ]; then
-          cp "./target/${{ matrix.target }}/release/node_inject.exe" ./archive/
-          cp "./js/license-gen/target/${{ matrix.target }}/release/license-gen.exe" ./archive/
-          cd archive
-          7z a "${{ matrix.archive-name }}" LICENSE README.md node_inject.exe license-gen.exe
-        else
+          # Windows 构建步骤
+        elif [ "${{ matrix.build }}" = "mac" ]; then
+          # Mac M1 构建步骤
           cp "./target/${{ matrix.target }}/release/node_inject" ./archive/
-          cp "./js/license-gen/target/${{ matrix.target }}/release/license-gen" ./archive/
           cd archive
-          tar -czf "${{ matrix.archive-name }}" LICENSE README.md node_inject license-gen
+          tar -czf "${{ matrix.archive-name }}" LICENSE README.md node_inject
+        else
+          # Linux 构建步骤
         fi
     - name: Upload archive
       uses: actions/upload-artifact@v1
