@@ -61,14 +61,23 @@ jobs:
         cp LICENSE README.md archive/
         ls -lR
         if [ "${{ matrix.build }}" = "windows" ]; then
+          cp "./target/${{ matrix.target }}/release/node_inject.exe" ./archive/
+          cp "./js/license-gen/target/${{ matrix.target }}/release/license-gen.exe" ./archive/
+          cd archive
+          7z a "${{ matrix.archive-name }}" LICENSE README.md node_inject.exe license-gen.exe
           # Windows 构建步骤
         elif [ "${{ matrix.build }}" = "mac" ]; then
           # Mac M1 构建步骤
-          cp "./target/${{ matrix.target }}/release/node_inject" ./archive/
+          cp -r "./target/${{ matrix.target }}/release" ./archive/
+          cp -r "./js/license-gen/target/${{ matrix.target }}/release/" ./archive/
           cd archive
-          tar -czf "${{ matrix.archive-name }}" LICENSE README.md node_inject
+          tar -czf "${{ matrix.archive-name }}" ./*
         else
           # Linux 构建步骤
+          cp "./target/${{ matrix.target }}/release/node_inject" ./archive/
+          cp "./js/license-gen/target/${{ matrix.target }}/release/license-gen" ./archive/
+          cd archive
+          tar -czf "${{ matrix.archive-name }}" LICENSE README.md node_inject license-gen
         fi
     - name: Upload archive
       uses: actions/upload-artifact@v1
